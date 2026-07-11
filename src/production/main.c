@@ -9,44 +9,12 @@
 #include "blueprint/blueprint.h"
 #include "dispatcher/dispatcher.h"
 #include "frontend/frontend.h"
+#include "processing/processing.h"
 
 // TODO - tests
 
 #define SHUTDOWN(E) { error_status = (E); goto shutdown; }
 #define ASSERT(F, E) { if(!(F)) { SHUTDOWN(E); } }
-
-typedef struct processing_resources_t {
-	pthread_mutex_t* command_buffer_lock;
-} processing_resources_t;
-
-void processing_cleanup(void* data) {
-	processing_resources_t resources = *(processing_resources_t*)data;
-}
-
-void* processing_loop(void* data) {
-	int old_cancelstate = 0;
-	processing_resources_t resources = { 0 };
-
-	pthread_cleanup_push(processing_cleanup, &resources);
-
-	while(true) {
-		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &old_cancelstate);
-
-		pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &old_cancelstate);
-	}
-
-	(void)old_cancelstate;
-
-	pthread_cleanup_pop(1); // required to close `pthread_cleanup_push` macro
-
-	return NULL;
-}
-
-void input_loop() {
-	while(true) {
-		
-	}
-}
 
 int main(int argc, char* argv[]) {
 	int error_status = 0;
@@ -62,7 +30,7 @@ int main(int argc, char* argv[]) {
 
 	blueprint_t* blueprints = NULL;
 
-	pthread_t processing_thread;
+	pthread_t* processing_thread = NULL;
 
 	ASSERT(dispatcher_init(&dispatcher), 10);
 	ASSERT(arranger_init(&arranger, dispatch_component), 12);
@@ -70,13 +38,15 @@ int main(int argc, char* argv[]) {
 
 	ASSERT(arranger_start(arranger), 100);
 
-	uint32_t blueprint_count = create_blueprints_from_dir(argv[1], &blueprints);
+	create_blueprints_from_dir(argv[1], &blueprints);
 	
-	pthread_create(&processing_thread, NULL, processing_loop, NULL);
+	ASSERT(!pthread_create(processing_thread, NULL, processing_loop, NULL), 101);
 
-	input_loop();
+	input_loop(NULL /* TODO */);
 
 shutdown:
+	if(processing_thread != NULL) { pthread_cancel(*processing_thread); }
+
 	free(blueprints);
 
 	free(frontend);
