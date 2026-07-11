@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <pthread.h>
+
 #include "arrangement/arrangement.h"
 #include "blueprint/blueprint.h"
 #include "dispatcher/dispatcher.h"
@@ -48,7 +50,7 @@ uint32_t create_blueprints_from_dir(char* directory_path, blueprint_t** result_b
 	return blueprint_count;
 }
 
-void start_loop() {
+void input_loop() {
 	while(true) {
 		
 	}
@@ -76,7 +78,7 @@ int main(int argc, char* argv[]) {
 
 	uint32_t blueprint_count = create_blueprints_from_dir(argv[1], &blueprints);
 	
-	start_loop();
+	input_loop();
 
 shutdown:
 	free(blueprints);
