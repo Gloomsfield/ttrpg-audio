@@ -52,12 +52,17 @@ uint32_t create_blueprints_from_dir(char* directory_path, blueprint_t** result_b
 	return blueprint_count;
 }
 
-void processing_cleanup(void* data) { }
+typedef struct processing_resources_t { } processing_resources_t;
+
+void processing_cleanup(void* data) {
+	processing_resources_t resources = *(processing_resources_t*)data;
+}
 
 void* processing_loop(void* data) {
 	int old_cancelstate = 0;
+	processing_resources_t resources = { 0 };
 
-	pthread_cleanup_push(processing_cleanup, NULL);
+	pthread_cleanup_push(processing_cleanup, &resources);
 
 	while(true) {
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &old_cancelstate);
