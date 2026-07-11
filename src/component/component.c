@@ -1,4 +1,4 @@
-#include "hash.h"
+#include "component.h"
 
 // TODO - source
 // TODO - tests
