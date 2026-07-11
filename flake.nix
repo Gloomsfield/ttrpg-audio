@@ -38,6 +38,7 @@
 								separator = "\n";
 								string = ''
 									-isystem${pkgs.clangStdenv.cc.libc.dev}/include/
+									-Isrc/
 								'';
 							};
 						in ''
