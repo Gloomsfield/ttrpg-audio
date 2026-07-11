@@ -12,7 +12,7 @@ typedef struct selection_info_t {
 	uint32_t n;
 } selection_info_t;
 
-bool arranger_init(arranger_t* arranger, void(* on_component_built)(component_t* new_component));
+bool arranger_init(arranger_t** arranger, void(* on_component_built)(component_t* new_component));
 bool arranger_start(arranger_t* arranger);
 
 void arranger_update_selection(arranger_t* arranger, selection_info_t* new_selection);
