@@ -6,6 +6,6 @@
 
 typedef struct dispatcher_t dispatcher_t;
 
-bool init_dispatcher(dispatcher_t** dispatcher);
+bool dispatcher_init(dispatcher_t** dispatcher);
 
 bool dispatch_component(dispatcher_t* dispatcher, component_t* component);
