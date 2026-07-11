@@ -13,6 +13,8 @@
 
 #include "utils/files.h"
 
+// TODO - tests
+
 #define SHUTDOWN(E) { error_status = (E); goto shutdown; }
 #define ASSERT(F, E) { if(!(F)) { SHUTDOWN(E); } }
 
