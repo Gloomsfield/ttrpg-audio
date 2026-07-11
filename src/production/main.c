@@ -52,6 +52,26 @@ uint32_t create_blueprints_from_dir(char* directory_path, blueprint_t** result_b
 	return blueprint_count;
 }
 
+void processing_cleanup(void* data) { }
+
+void* processing_loop(void* data) {
+	int old_cancelstate = 0;
+
+	pthread_cleanup_push(processing_cleanup, NULL);
+
+	while(true) {
+		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &old_cancelstate);
+
+		pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &old_cancelstate);
+	}
+
+	(void)old_cancelstate;
+
+	pthread_cleanup_pop(1); // required to close `pthread_cleanup_push` macro
+
+	return NULL;
+}
+
 void input_loop() {
 	while(true) {
 		
@@ -72,6 +92,8 @@ int main(int argc, char* argv[]) {
 
 	blueprint_t* blueprints = NULL;
 
+	pthread_t processing_thread;
+
 	ASSERT(dispatcher_init(&dispatcher), 10);
 	ASSERT(arranger_init(&arranger, dispatch_component), 12);
 	ASSERT(frontend_init(&frontend, arranger_update_selection), 13);
@@ -80,6 +102,8 @@ int main(int argc, char* argv[]) {
 
 	uint32_t blueprint_count = create_blueprints_from_dir(argv[1], &blueprints);
 	
+	pthread_create(&processing_thread, NULL, processing_loop, NULL);
+
 	input_loop();
 
 shutdown:
